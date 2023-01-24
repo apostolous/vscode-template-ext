@@ -28,7 +28,11 @@
 			"outFiles": [
 				"${workspaceFolder}/out/test/**/*.js"
 			],
-			"preLaunchTask": "npm: test-watch"
+			"preLaunchTask": "npm: test-watch",
+			"resolveSourceMapLocations": [
+				"${workspaceFolder}/**",
+				"!**/node_modules/**"
+			],
 		}
 	]
 }
