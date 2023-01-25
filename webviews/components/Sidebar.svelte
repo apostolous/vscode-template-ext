@@ -14,6 +14,7 @@
             type: "onPick",
             value: photoData
         })
+        console.log("onclick");
     }
 </script>
 
