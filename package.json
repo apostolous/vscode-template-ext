@@ -1,6 +1,6 @@
 {
-	"name": "myextension",
-	"displayName": "MyExtension",
+	"name": "packagedotjson",
+	"displayName": "Name DisplayName",
 	"description": "My VS Code extension",
 	"version": "0.0.1",
 	"engines": {
@@ -15,6 +15,7 @@
 	},
 	"activationEvents": [
 		"onCommand:myextension.sayhello",
+		"onCommand:mycmd.refresh",
 		"onView:myextension-sidebar"
 	],
 	"main": "./dist/extension.js",
