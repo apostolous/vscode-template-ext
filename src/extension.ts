@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { SidebarProvider } from './SidebarProvider';
+import { ActivityPanel } from './ActivityPanelHandler';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -14,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand(
 		"myextension.start", () => {
-
+			ActivityPanel.createOrShow(context.extensionUri)
 		}
 	))
 }

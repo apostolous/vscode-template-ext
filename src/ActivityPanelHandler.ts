@@ -1,12 +1,8 @@
 import * as vscode from "vscode";
 
-function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
+function getWebviewOptions(): vscode.WebviewOptions {
 	return {
-		// Enable javascript in the webview
 		enableScripts: true,
-
-		// And restrict the webview to only loading content from our extension's `media` directory.
-		localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'media')]
 	};
 }
 
@@ -35,9 +31,10 @@ export class ActivityPanel implements vscode.WebviewViewProvider {
 	}
 
     constructor(private readonly _panel: vscode.WebviewPanel, private readonly _extensionUri: vscode.Uri) {
-        // Listen for when the panel is disposed
-        // This happens when the user closes the panel or when the panel is closed programmatically
+        // Listen for disposal
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+
+        this._update(this._panel.webview);
 
         // Update the content based on view changes
         this._panel.onDidChangeViewState(
@@ -62,10 +59,13 @@ export class ActivityPanel implements vscode.WebviewViewProvider {
             null,
             this._disposables
         );
+
+        console.log("successfully registered");
     }
 
     private _update(webview: vscode.Webview) {
         this._panel.webview.html = this._getHtmlForWebview(webview);
+        console.log("Updating webview")
     }
 
     public static createOrShow(extensionUri: vscode.Uri) {
@@ -82,9 +82,9 @@ export class ActivityPanel implements vscode.WebviewViewProvider {
         // Otherwise, create a new panel.
         const panel = vscode.window.createWebviewPanel(
             ActivityPanel.viewType,
-            'Cat Coding',
+            'My Extension',
             column || vscode.ViewColumn.One,
-            getWebviewOptions(extensionUri),
+            getWebviewOptions(),
         );
 
         ActivityPanel.currentPanel = new ActivityPanel(panel, extensionUri);
@@ -97,8 +97,6 @@ export class ActivityPanel implements vscode.WebviewViewProvider {
         webviewView.webview.options = {
             // Allow scripts in the webview
             enableScripts: true,
-
-            localResourceRoots: [this._extensionUri],
         };
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
