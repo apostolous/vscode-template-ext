@@ -41,9 +41,9 @@
 		},
 		"commands": [
 			{
-				"command": "myextension.sayhello",
+				"command": "myextension.start",
 				"category": "MyExtension",
-				"title": "Say hello"
+				"title": "Start the activity for MyExtension"
 			}
 		]
 	},

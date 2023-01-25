@@ -1,10 +1,95 @@
 import * as vscode from "vscode";
 
-export class SidebarProvider implements vscode.WebviewViewProvider {
+function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
+	return {
+		// Enable javascript in the webview
+		enableScripts: true,
+
+		// And restrict the webview to only loading content from our extension's `media` directory.
+		localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'media')]
+	};
+}
+
+export class ActivityPanel implements vscode.WebviewViewProvider {
     _view?: vscode.WebviewView;
     _doc?: vscode.TextDocument;
 
-    constructor(private readonly _extensionUri: vscode.Uri) { }
+    public static currentPanel: ActivityPanel | undefined;
+
+    private _disposables: vscode.Disposable[] = [];
+
+    public static readonly viewType = 'myextension';
+
+    public dispose() {
+		ActivityPanel.currentPanel = undefined;
+
+		// Clean up our resources
+		this._panel.dispose();
+
+		while (this._disposables.length) {
+			const x = this._disposables.pop();
+			if (x) {
+				x.dispose();
+			}
+		}
+	}
+
+    constructor(private readonly _panel: vscode.WebviewPanel, private readonly _extensionUri: vscode.Uri) {
+        // Listen for when the panel is disposed
+        // This happens when the user closes the panel or when the panel is closed programmatically
+        this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+
+        // Update the content based on view changes
+        this._panel.onDidChangeViewState(
+            e => {
+                if (this._panel.visible) {
+                    this._update(this._panel.webview);
+                }
+            },
+            null,
+            this._disposables
+        );
+
+        // Handle messages from the webview
+        this._panel.webview.onDidReceiveMessage(
+            message => {
+                switch (message.command) {
+                    case 'alert':
+                        vscode.window.showErrorMessage(message.text);
+                        return;
+                }
+            },
+            null,
+            this._disposables
+        );
+    }
+
+    private _update(webview: vscode.Webview) {
+        this._panel.webview.html = this._getHtmlForWebview(webview);
+    }
+
+    public static createOrShow(extensionUri: vscode.Uri) {
+        const column = vscode.window.activeTextEditor
+            ? vscode.window.activeTextEditor.viewColumn
+            : undefined;
+
+        // If we already have a panel, show it.
+        if (ActivityPanel.currentPanel) {
+            ActivityPanel.currentPanel._panel.reveal(column);
+            return;
+        }
+
+        // Otherwise, create a new panel.
+        const panel = vscode.window.createWebviewPanel(
+            ActivityPanel.viewType,
+            'Cat Coding',
+            column || vscode.ViewColumn.One,
+            getWebviewOptions(extensionUri),
+        );
+
+        ActivityPanel.currentPanel = new ActivityPanel(panel, extensionUri);
+    }
+
 
     public resolveWebviewView(webviewView: vscode.WebviewView) {
         this._view = webviewView;
@@ -18,7 +103,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        // Listen for messages from the Sidebar component and execute action
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
                 case "onInfo": {
@@ -52,10 +136,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             vscode.Uri.parse(`${this._extensionUri}/media/vscode.css`)
         );
         const scriptUri = webview.asWebviewUri(
-            vscode.Uri.parse(`${this._extensionUri}/out/compiled/sidebar.js`)
+            vscode.Uri.parse(`${this._extensionUri}/out/compiled/activity.js`)
         );
         const styleMainUri = webview.asWebviewUri(
-            vscode.Uri.parse(`${this._extensionUri}/out/compiled/sidebar.css`)
+            vscode.Uri.parse(`${this._extensionUri}/out/compiled/activity.css`)
         );
 
         // Use a nonce to only allow a specific script to be run.

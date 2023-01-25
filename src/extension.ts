@@ -12,15 +12,11 @@ export function activate(context: vscode.ExtensionContext) {
 		)
 	);
 
-	// Register a custom command
-	// context.subscriptions.push(vscode.commands.registerCommand('myextension.commandname', () => {
-	// 	// code here...
-	// }));
+	context.subscriptions.push(vscode.commands.registerCommand(
+		"myextension.start", () => {
 
-	context.subscriptions.push(vscode.commands.registerCommand('myextension.sayhello', () => {
-		vscode.window.showInformationMessage("Hello World!");
-	}));
-
+		}
+	))
 }
 
 // this method is called when your extension is deactivated
