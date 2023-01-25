@@ -38,14 +38,7 @@
 					"contextualTitle": "MyExtension"
 				}
 			]
-		},
-		"commands": [
-			{
-				"command": "myextension.start",
-				"category": "MyExtension",
-				"title": "Start the activity for MyExtension"
-			}
-		]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run package",

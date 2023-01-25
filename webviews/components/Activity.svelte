@@ -1,8 +1,9 @@
 <script lang="ts">
-  const urlParams = new URLSearchParams(window.location.search);
-  const data = urlParams.get("data");
+  const d = data;
 </script>
 
 <h1>Hello world!</h1>
 
-{data}
+{#if d}
+  <img src={d.url} />
+{/if}

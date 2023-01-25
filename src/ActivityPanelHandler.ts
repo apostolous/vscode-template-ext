@@ -30,7 +30,8 @@ export class ActivityPanel implements vscode.WebviewViewProvider {
 		}
 	}
 
-    constructor(private readonly _panel: vscode.WebviewPanel, private readonly _extensionUri: vscode.Uri) {
+    constructor(private readonly _panel: vscode.WebviewPanel, private readonly _extensionUri: vscode.Uri, private readonly _data?: any | null) {
+        this._data = JSON.stringify(_data);
         // Listen for disposal
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
@@ -59,8 +60,6 @@ export class ActivityPanel implements vscode.WebviewViewProvider {
             null,
             this._disposables
         );
-
-        console.log("successfully registered");
     }
 
     private _update(webview: vscode.Webview) {
@@ -68,7 +67,7 @@ export class ActivityPanel implements vscode.WebviewViewProvider {
         console.log("Updating webview")
     }
 
-    public static createOrShow(extensionUri: vscode.Uri) {
+    public static createOrShow(extensionUri: vscode.Uri, data?: any) {
         const column = vscode.window.activeTextEditor
             ? vscode.window.activeTextEditor.viewColumn
             : undefined;
@@ -87,7 +86,7 @@ export class ActivityPanel implements vscode.WebviewViewProvider {
             getWebviewOptions(),
         );
 
-        ActivityPanel.currentPanel = new ActivityPanel(panel, extensionUri);
+        ActivityPanel.currentPanel = new ActivityPanel(panel, extensionUri, data);
     }
 
 
@@ -159,6 +158,7 @@ export class ActivityPanel implements vscode.WebviewViewProvider {
                 <link href="${styleMainUri}" rel="stylesheet">
                 <script nonce="${nonce}">
                     const tsvscode = acquireVsCodeApi();
+                    const data = ${this._data}
                 </script>
 
 			</head>

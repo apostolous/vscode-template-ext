@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { ActivityPanel } from "./ActivityPanelHandler";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
     _view?: vscode.WebviewView;
@@ -21,6 +22,17 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         // Listen for messages from the Sidebar component and execute action
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
+                case "onPick": {
+                    if (!data) {
+                        return;
+                    }
+
+                    const { value } = data;
+
+                    ActivityPanel.createOrShow(this._extensionUri, value);
+
+                    break;
+                }
                 case "onInfo": {
                     if (!data.value) {
                         return;
