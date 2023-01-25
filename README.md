@@ -1,3 +1,5 @@
-# VS Code extension template
+# Svelte VSCode Extension Template
 
-This is a starting template for VS Code extensions
+A Svelte VSCode extension utilizing Rollup for displaying a webview in the sidebar and in the main content area.
+
+To run it, just clone the repository and hit f5!
